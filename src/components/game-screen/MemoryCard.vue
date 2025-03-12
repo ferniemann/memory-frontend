@@ -6,7 +6,7 @@
       <span class="text-2xl text-white">?</span>
     </div>
     <div class="bg-amber-200 transition-all card-wrapper h-full flex items-center justify-center p-2">
-      <img :src="card.image" alt="Memory Bild">
+      <img :src="card.image" :alt="card.alt">
     </div>
   </li>
 </template>
