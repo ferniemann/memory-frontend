@@ -1,1 +1,20 @@
 @import 'tailwindcss';
+
+button {
+  cursor: pointer;
+}
+
+.flipped {
+  transform: scaleX(0);
+  transition: 0.25s transform;
+}
+
+.card-wrapper {
+  transform: scaleX(0);
+}
+
+.flipped + .card-wrapper {
+  transform: scaleX(1);
+  transition: 0.25s;
+  transition-delay: 0.25s;
+}
