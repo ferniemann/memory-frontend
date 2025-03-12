@@ -28,6 +28,7 @@ export const useGameStore = defineStore('game', () => {
 
   async function initNewGame() {
     endGame.value = false
+    correctPairs = 0
     ranking.value = null
     await getAllCards()
   }
