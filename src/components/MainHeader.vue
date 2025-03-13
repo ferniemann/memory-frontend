@@ -1,7 +1,7 @@
 <template>
   <header class="bg-violet-100 p-4 flex justify-between items-center">
     <h1 class="text-xl font-black text-violet-700">Memory Game</h1>
-    <BtnNewGame />
+    <BtnNewGame :confirmation="true" />
   </header>
 </template>
 
