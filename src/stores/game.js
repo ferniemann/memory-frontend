@@ -18,19 +18,39 @@ export const useGameStore = defineStore('game', () => {
         id: i,
         name: `Spieler ${i + 1}`,
         score: 0,
-        currentPlayer: false,
       })
     }
   }
 
   const currentPlayer = ref(0)
-  const revealedCards = ref([])
+  const revealedCards = ref(0)
+
+  async function loadGame() {
+    const savedGame = JSON.parse(localStorage.getItem('game'))
+
+    if (savedGame) {
+      cards.value = savedGame.cards
+      players.value = savedGame.players
+      correctPairs = savedGame.correctPairs
+      currentPlayer.value = savedGame.currentPlayer
+      revealedCards.value = savedGame.revealedCards
+      endGame.value = savedGame.endGame
+      ranking.value = savedGame.ranking
+      return
+    }
+
+    initNewGame()
+  }
 
   async function initNewGame() {
     endGame.value = false
     correctPairs = 0
     ranking.value = null
+    currentPlayer.value = 0
+    revealedCards.value = 0
     await getAllCards()
+    createPlayers()
+    saveGame()
   }
 
   async function getAllCards() {
@@ -39,25 +59,30 @@ export const useGameStore = defineStore('game', () => {
   }
 
   function revealCard(card) {
-    if (revealedCards.value.length > 1) return
-    if (revealedCards.value.includes(card)) return
+    if (revealedCards.value > 1) return
+    if (card.revealed) return
     if (card.correct) return
 
-    revealedCards.value.push(card)
+    card.revealed = true
+    revealedCards.value++
 
-    if (revealedCards.value.length === 2) checkMatch()
+    saveGame()
+
+    if (revealedCards.value === 2) checkMatch()
   }
 
   function checkMatch() {
-    const firstCard = revealedCards.value[0]
-    const secondCard = revealedCards.value[1]
+    const revealedCards = cards.value.filter((card) => card.revealed && !card.correct)
+    const firstCard = revealedCards[0]
+    const secondCard = revealedCards[1]
 
     if (firstCard.pair_id === secondCard.pair_id) {
       return handleMatch(firstCard, secondCard)
     }
 
     setTimeout(() => {
-      revealedCards.value.length = 0
+      firstCard.revealed = false
+      secondCard.revealed = false
       nextMove()
     }, 1000)
   }
@@ -67,8 +92,9 @@ export const useGameStore = defineStore('game', () => {
     card2.correct = true
 
     correctPairs++
+    revealedCards.value = 0
     players.value[currentPlayer.value].score++
-    revealedCards.value.length = 0
+    saveGame()
 
     if (correctPairs === cards.value.length / 2) {
       setTimeout(() => {
@@ -79,6 +105,7 @@ export const useGameStore = defineStore('game', () => {
 
   function nextMove() {
     const lastPlayer = players.value.length - 1
+    revealedCards.value = 0
 
     if (currentPlayer.value === lastPlayer) {
       currentPlayer.value = 0
@@ -86,15 +113,37 @@ export const useGameStore = defineStore('game', () => {
     }
 
     currentPlayer.value++
+
+    saveGame()
   }
 
   function handleEndGame() {
     endGame.value = true
     calculateRanking()
+    saveGame()
   }
 
   function calculateRanking() {
     ranking.value = players.value.sort((a, b) => b.score - a.score)
+  }
+
+  function removeSavedGame() {
+    localStorage.setItem('game', null)
+  }
+
+  function saveGame() {
+    localStorage.setItem(
+      'game',
+      JSON.stringify({
+        cards: cards.value,
+        playersCount: playersCount.value,
+        players: players.value,
+        currentPlayer: currentPlayer.value,
+        revealedCards: revealedCards.value,
+        endGame: endGame.value,
+        ranking: ranking.value,
+      }),
+    )
   }
 
   return {
@@ -110,6 +159,8 @@ export const useGameStore = defineStore('game', () => {
     getAllCards,
     revealCard,
     checkMatch,
+    loadGame,
     initNewGame,
+    removeSavedGame,
   }
 })

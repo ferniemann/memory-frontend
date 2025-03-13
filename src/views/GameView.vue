@@ -21,7 +21,6 @@ import { useGameStore } from "@/stores/game.js"
 const store = useGameStore()
 
 onMounted(async () => {
-  await store.initNewGame()
-  store.createPlayers()
+  await store.loadGame()
 })
 </script>

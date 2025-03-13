@@ -8,4 +8,13 @@
 
 <script setup>
 import NewGameOptions from "@/components/new-game/NewGameOptions.vue"
+
+import { useGameStore } from "@/stores/game.js"
+import { onMounted } from "vue"
+
+const store = useGameStore()
+
+onMounted(() => {
+  store.removeSavedGame()
+})
 </script>
