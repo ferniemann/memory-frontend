@@ -10,6 +10,8 @@ button {
 }
 
 .card-wrapper {
+  border-radius: 0.25rem;
+
   transform: scaleX(0);
 }
 
@@ -17,4 +19,8 @@ button {
   transform: scaleX(1);
   transition: 0.25s;
   transition-delay: 0.25s;
+}
+
+.correct + .card-wrapper {
+  border-color: rgb(103, 178, 91);
 }
