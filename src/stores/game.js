@@ -140,6 +140,7 @@ export const useGameStore = defineStore('game', () => {
         players: players.value,
         currentPlayer: currentPlayer.value,
         revealedCards: revealedCards.value,
+        correctPairs: correctPairs,
         endGame: endGame.value,
         ranking: ranking.value,
       }),
